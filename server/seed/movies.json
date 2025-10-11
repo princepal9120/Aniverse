@@ -1,0 +1,179 @@
+[
+    {
+        "imdb_id": "tt0245429",
+        "title": "Spirited Away",
+        "poster_path": "https://image.tmdb.org/t/p/original/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
+        "youtube_id": "ByXuk9QqQkk",
+        "genre": [
+            {"genre_id": 4, "genre_name": "Fantasy"},
+            {"genre_id": 7, "genre_name": "Action"}
+        ],
+        "admin_review": "A timeless Studio Ghibli masterpiece.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0119698",
+        "title": "Princess Mononoke",
+        "poster_path": "https://image.tmdb.org/t/p/original/cMYCDADoLKLbB83g4WnJegaZimC.jpg",
+        "youtube_id": "4OiMOHRDs14",
+        "genre": [
+            {"genre_id": 4, "genre_name": "Fantasy"},
+            {"genre_id": 7, "genre_name": "Action"}
+        ],
+        "admin_review": "Epic tale of nature versus human greed.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0347618",
+        "title": "Grave of the Fireflies",
+        "poster_path": "https://image.tmdb.org/t/p/original/qG3RYlIVpTYclR9TYIsy8p7m7AT.jpg",
+        "youtube_id": "4vPeTSRd580",
+        "genre": [{"genre_id": 2, "genre_name": "Drama"}],
+        "admin_review": "A heartbreaking portrayal of war's cost.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt5311514",
+        "title": "Your Name",
+        "poster_path": "https://image.tmdb.org/t/p/original/q719jXXEzOoYaps6babgKnONONX.jpg",
+        "youtube_id": "xU47nhruN-Q",
+        "genre": [
+            {"genre_id": 2, "genre_name": "Drama"},
+            {"genre_id": 6, "genre_name": "Sci-Fi"}
+        ],
+        "admin_review": "Emotional and unforgettable love story.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0347149",
+        "title": "Howl's Moving Castle",
+        "poster_path": "https://image.tmdb.org/t/p/original/1nBzE6wD2rq9SKJzV0NnzzkGr5K.jpg",
+        "youtube_id": "iwROgK94zcM",
+        "genre": [
+            {"genre_id": 4, "genre_name": "Fantasy"},
+            {"genre_id": 1, "genre_name": "Comedy"}
+        ],
+        "admin_review": "Magical and emotional masterpiece.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0876563",
+        "title": "Summer Wars",
+        "poster_path": "https://image.tmdb.org/t/p/original/p4nXvZ4OmoTqUJXkD2yywQOq8Bg.jpg",
+        "youtube_id": "VaroYyq2E6I",
+        "genre": [
+            {"genre_id": 6, "genre_name": "Sci-Fi"},
+            {"genre_id": 7, "genre_name": "Action"}
+        ],
+        "admin_review": "Heartwarming story about family and technology.",
+        "ranking": {"ranking_value": 2, "ranking_name": "Good"}
+    },
+    {
+        "imdb_id": "tt5323662",
+        "title": "A Silent Voice",
+        "poster_path": "https://image.tmdb.org/t/p/original/fGaJtUZ9JqzjK4DndQh6QU7oCzQ.jpg",
+        "youtube_id": "nfK6UgLra7g",
+        "genre": [
+            {"genre_id": 2, "genre_name": "Drama"},
+            {"genre_id": 1, "genre_name": "Comedy"}
+        ],
+        "admin_review": "Beautifully explores guilt and redemption.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0983213",
+        "title": "Paprika",
+        "poster_path": "https://image.tmdb.org/t/p/original/vjW8xgA9aH5g2R7SRa5bJzV4b6P.jpg",
+        "youtube_id": "jJzEW_eE1G0",
+        "genre": [
+            {"genre_id": 6, "genre_name": "Sci-Fi"},
+            {"genre_id": 8, "genre_name": "Mystery"}
+        ],
+        "admin_review": "Mind-bending and visually stunning.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0096283",
+        "title": "My Neighbor Totoro",
+        "poster_path": "https://image.tmdb.org/t/p/original/rtGDOeG9LzoerkDGZF9dnVeLppL.jpg",
+        "youtube_id": "92a7Hj0ijLs",
+        "genre": [
+            {"genre_id": 4, "genre_name": "Fantasy"},
+            {"genre_id": 1, "genre_name": "Comedy"}
+        ],
+        "admin_review": "A gentle and heartwarming Ghibli classic.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0092067",
+        "title": "Castle in the Sky",
+        "poster_path": "https://image.tmdb.org/t/p/original/npz8UXhK9ZkYjT2ZsXUFzZyOsnb.jpg",
+        "youtube_id": "8ykEy-yPBFc",
+        "genre": [
+            {"genre_id": 7, "genre_name": "Action"},
+            {"genre_id": 6, "genre_name": "Sci-Fi"}
+        ],
+        "admin_review": "A thrilling adventure with magical visuals.",
+        "ranking": {"ranking_value": 2, "ranking_name": "Good"}
+    },
+    {
+        "imdb_id": "tt0097814",
+        "title": "Kiki's Delivery Service",
+        "poster_path": "https://image.tmdb.org/t/p/original/5gYj8UeZ7h6Focn9n5l3FhM5E4y.jpg",
+        "youtube_id": "4bG17OYs-GA",
+        "genre": [
+            {"genre_id": 1, "genre_name": "Comedy"},
+            {"genre_id": 4, "genre_name": "Fantasy"}
+        ],
+        "admin_review": "Charming and inspirational story of self-growth.",
+        "ranking": {"ranking_value": 2, "ranking_name": "Good"}
+    },
+    {
+        "imdb_id": "tt0985058",
+        "title": "The Girl Who Leapt Through Time",
+        "poster_path": "https://image.tmdb.org/t/p/original/dq8v6n1zMSsG0KIA7Yh2M6m4I7H.jpg",
+        "youtube_id": "Vw4KVoEVcr0",
+        "genre": [
+            {"genre_id": 6, "genre_name": "Sci-Fi"},
+            {"genre_id": 1, "genre_name": "Comedy"}
+        ],
+        "admin_review": "A touching story about time and youth.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt5310090",
+        "title": "Weathering With You",
+        "poster_path": "https://image.tmdb.org/t/p/original/qgrk7r1fV4IjuoeiGS5HOhXNdLJ.jpg",
+        "youtube_id": "Q6iK6DjV_iE",
+        "genre": [
+            {"genre_id": 2, "genre_name": "Drama"},
+            {"genre_id": 6, "genre_name": "Sci-Fi"}
+        ],
+        "admin_review": "Visually stunning and emotionally charged.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt0158811",
+        "title": "The End of Evangelion",
+        "poster_path": "https://image.tmdb.org/t/p/original/7mKBNK7FH2kQzAOH7nWRAo9lIDu.jpg",
+        "youtube_id": "kFhG-ZzLNN4",
+        "genre": [
+            {"genre_id": 6, "genre_name": "Sci-Fi"},
+            {"genre_id": 8, "genre_name": "Mystery"}
+        ],
+        "admin_review": "A complex and emotional conclusion to the series.",
+        "ranking": {"ranking_value": 1, "ranking_name": "Excellent"}
+    },
+    {
+        "imdb_id": "tt2380307",
+        "title": "Pokemon: The Movie - I Choose You!",
+        "poster_path": "https://image.tmdb.org/t/p/original/jYtdGtbIKeQbKpP2xhYXO7L2KBi.jpg",
+        "youtube_id": "u7W5lZ3YkqQ",
+        "genre": [
+            {"genre_id": 7, "genre_name": "Action"},
+            {"genre_id": 1, "genre_name": "Comedy"}
+        ],
+        "admin_review": "Nostalgic journey for Pokémon fans.",
+        "ranking": {"ranking_value": 2, "ranking_name": "Good"}
+    }
+]
