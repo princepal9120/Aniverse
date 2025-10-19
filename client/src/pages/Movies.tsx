@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Play, Plus, Check, Search, SlidersHorizontal, Tv, Clock, TrendingUp, LogOut } from "lucide-react";
+import { Search, SlidersHorizontal, Tv, TrendingUp, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFavorites } from "@/contexts/FavoriteContext";
 import { useToast } from "@/hooks/use-toast";
+import { useScrollPosition } from "@/hooks/use-scroll";
 import { api, Movie, Genre } from "@/lib/api";
 import VideoPlayer from "@/components/VideoPlayer";
+import AnimeCarousel from "@/components/AnimeCarousel";
+import AnimeInfoModal from "@/components/AnimeInfoModal";
 
 const Movies = () => {
   const { user, logout } = useAuth();
   const { addToFavorites, isFavorite } = useFavorites();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const scrolled = useScrollPosition();
 
   const [movies, setMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
@@ -23,6 +27,8 @@ const Movies = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [infoMovie, setInfoMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,6 +110,30 @@ const Movies = () => {
     setSelectedMovie(null);
   };
 
+  const handleShowInfo = (movie: Movie) => {
+    setInfoMovie(movie);
+    setShowInfoModal(true);
+  };
+
+  const handleCloseInfo = () => {
+    setShowInfoModal(false);
+    setInfoMovie(null);
+  };
+
+  // Get movies by genre
+  const getMoviesByGenre = (genreName: string) => {
+    return filteredMovies.filter(movie =>
+      movie.genre.some(g => g.genre_name === genreName)
+    );
+  };
+
+  // Get top rated from filtered
+  const getTopRated = () => {
+    return [...filteredMovies]
+      .sort((a, b) => b.ranking.ranking_value - a.ranking.ranking_value)
+      .slice(0, 15);
+  };
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && showPlayer) {
@@ -116,26 +146,33 @@ const Movies = () => {
   }, [showPlayer]);
 
   return (
-    <div className="min-h-screen sakura-bg">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg">
-        <div className="container mx-auto px-6 py-4">
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Navigation - Netflix Style */}
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style={{
+          background: scrolled
+            ? 'rgba(0,0,0,0.95)'
+            : 'linear-gradient(180deg, rgba(0,0,0,0.7) 10%, transparent)',
+          backdropFilter: scrolled ? 'blur(10px)' : 'none'
+        }}
+      >
+        <div className="px-4 md:px-12 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8">
-              <Link to="/dashboard" className="flex items-center gap-3 group">
-                <div className="w-10 h-10 bg-gradient-neon rounded-xl flex items-center justify-center shadow-glow-primary group-hover:scale-110 transition-transform">
-                  <Tv size={20} className="text-white" />
+              <Link to="/dashboard" className="flex items-center gap-2 group">
+                <div className="w-8 h-8 bg-gradient-neon rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Tv size={18} className="text-white" />
                 </div>
-                <span className="text-2xl font-bold text-gradient-neon">AniVerse</span>
+                <span className="text-xl md:text-2xl font-bold text-gradient-neon">AniVerse</span>
               </Link>
               <div className="hidden md:flex gap-6 text-sm">
-                <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/dashboard" className="text-white/70 hover:text-white transition-colors">
                   Home
                 </Link>
-                <Link to="/movies" className="text-foreground font-semibold border-b-2 border-primary pb-1">
+                <Link to="/movies" className="text-white font-semibold hover:text-white/80 transition-colors">
                   Browse
                 </Link>
-                <Link to="/my-list" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/my-list" className="text-white/70 hover:text-white transition-colors">
                   My List
                 </Link>
               </div>
@@ -144,13 +181,13 @@ const Movies = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                leftIcon={<LogOut size={18} />}
+                leftIcon={<LogOut size={16} />}
                 onClick={handleLogout}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-white/70 hover:text-white hidden md:flex"
               >
                 Logout
               </Button>
-              <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center text-primary-foreground font-bold shadow-glow-primary cursor-pointer hover:scale-110 transition-transform">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-primary rounded flex items-center justify-center text-primary-foreground font-bold cursor-pointer hover:scale-110 transition-transform">
                 {user ? getInitials(user.first_name, user.last_name) : "U"}
               </div>
             </div>
@@ -158,16 +195,16 @@ const Movies = () => {
         </div>
       </nav>
 
-      <div className="container mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="mb-12">
+      {/* Header Section */}
+      <div className="pt-24 pb-8 px-4 md:px-12">
+        <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <TrendingUp className="text-primary" size={40} />
-            <h1 className="text-5xl font-bold">
+            <h1 className="text-4xl md:text-5xl font-bold">
               <span className="text-gradient-neon">Browse Anime</span>
             </h1>
           </div>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-lg md:text-xl text-white/70">
             Explore our collection of {movies.length}+ amazing titles
           </p>
         </div>
@@ -175,19 +212,21 @@ const Movies = () => {
         {/* Search & Filters */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
+            <div className="flex-1 max-w-2xl">
               <Input
                 type="search"
                 placeholder="Search anime titles..."
                 leftIcon={<Search size={18} />}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-background-secondary border-white/10"
               />
             </div>
             <Button
               variant="secondary"
               leftIcon={<SlidersHorizontal size={18} />}
               onClick={() => setShowFilters(!showFilters)}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20"
             >
               Filters
             </Button>
@@ -195,16 +234,16 @@ const Movies = () => {
 
           {/* Genre Filters */}
           {showFilters && (
-            <div className="animate-fade-in p-6 bg-card border-2 border-primary/30 rounded-2xl shadow-glow-primary">
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <span className="text-gradient-neon">Filter by Genre</span>
+            <div className="animate-fade-in p-6 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl">
+              <h3 className="text-lg font-bold mb-4 text-white">
+                Filter by Genre
               </h3>
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setSelectedGenre("All")}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${selectedGenre === "All"
-                    ? "bg-gradient-primary text-primary-foreground shadow-glow-primary border-primary scale-105"
-                    : "bg-background-secondary text-muted-foreground hover:bg-background-elevated hover:text-foreground border-border"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedGenre === "All"
+                      ? "bg-primary text-white"
+                      : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
                     }`}
                 >
                   All
@@ -213,9 +252,9 @@ const Movies = () => {
                   <button
                     key={genre.genre_id}
                     onClick={() => setSelectedGenre(genre.genre_name)}
-                    className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${selectedGenre === genre.genre_name
-                      ? "bg-gradient-primary text-primary-foreground shadow-glow-primary border-primary scale-105"
-                      : "bg-background-secondary text-muted-foreground hover:bg-background-elevated hover:text-foreground border-border"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedGenre === genre.genre_name
+                        ? "bg-primary text-white"
+                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
                       }`}
                   >
                     {genre.genre_name}
@@ -224,82 +263,120 @@ const Movies = () => {
               </div>
             </div>
           )}
-        </div>
 
-        {/* Results Count */}
-        <div className="mb-6 flex items-center gap-2">
-          <p className="text-muted-foreground">
-            Showing <span className="text-primary font-bold">{filteredMovies.length}</span> of <span className="text-primary font-bold">{movies.length}</span> anime
-            {selectedGenre !== "All" && <span> in <span className="text-secondary font-bold">{selectedGenre}</span></span>}
+          {/* Results Count */}
+          <p className="text-white/60 text-sm">
+            Showing <span className="text-primary font-bold">{filteredMovies.length}</span> of{" "}
+            <span className="text-primary font-bold">{movies.length}</span> anime
+            {selectedGenre !== "All" && (
+              <span> in <span className="text-secondary font-bold">{selectedGenre}</span></span>
+            )}
           </p>
         </div>
-
-        {/* Movies Grid */}
+      </div>      {/* Content - Netflix Style Carousels */}
+      <div className="pb-20">
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="flex justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
           </div>
         ) : filteredMovies.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {filteredMovies.map((movie, index) => (
-              <div
-                key={movie.imdb_id}
-                className="group cursor-pointer animate-fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <div className="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 bg-background-secondary border-2 border-transparent hover:border-primary/50 transition-all">
-                  <img
-                    src={movie.poster_path}
-                    alt={movie.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          <>
+            {/* Top Rated */}
+            {getTopRated().length > 0 && (
+              <AnimeCarousel
+                title="Top Rated"
+                movies={getTopRated()}
+                onWatchMovie={handleWatchMovie}
+                onAddToFavorites={handleAddToList}
+                onShowInfo={handleShowInfo}
+              />
+            )}
+
+            {/* All Results or Filtered by Genre */}
+            {selectedGenre === "All" ? (
+              <>
+                {/* All Anime */}
+                <AnimeCarousel
+                  title="All Anime"
+                  movies={filteredMovies}
+                  onWatchMovie={handleWatchMovie}
+                  onAddToFavorites={handleAddToList}
+                  onShowInfo={handleShowInfo}
+                />
+
+                {/* By Genre - Action */}
+                {getMoviesByGenre("Action").length > 0 && (
+                  <AnimeCarousel
+                    title="Action"
+                    movies={getMoviesByGenre("Action")}
+                    onWatchMovie={handleWatchMovie}
+                    onAddToFavorites={handleAddToList}
+                    onShowInfo={handleShowInfo}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button
-                      variant="hero"
-                      size="sm"
-                      leftIcon={<Play size={16} />}
-                      className="shadow-glow-primary"
-                      onClick={() => handleWatchMovie(movie)}
-                    >
-                      Watch
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      leftIcon={isFavorite(movie.imdb_id) ? <Check size={16} /> : <Plus size={16} />}
-                      onClick={() => handleAddToList(movie)}
-                    >
-                      {isFavorite(movie.imdb_id) ? "In List" : "My List"}
-                    </Button>
-                  </div>
-                  {/* Ranking Badge */}
-                  <div className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 border border-primary/30">
-                    <span className="text-primary text-sm font-bold">{movie.ranking.ranking_name}</span>
-                  </div>
-                  {/* Genre Badge */}
-                  {movie.genre.length > 0 && (
-                    <div className="absolute top-3 left-3 px-2 py-1 rounded-lg text-xs font-bold bg-success/20 text-success border border-success/50">
-                      {movie.genre[0].genre_name}
-                    </div>
-                  )}
-                </div>
-                <h3 className="font-bold mb-1 group-hover:text-primary transition-colors line-clamp-2">
-                  {movie.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-1">
-                  {movie.genre.map(g => g.genre_name).join(", ")}
-                </p>
-              </div>
-            ))}
-          </div>
+                )}
+
+                {/* By Genre - Fantasy */}
+                {getMoviesByGenre("Fantasy").length > 0 && (
+                  <AnimeCarousel
+                    title="Fantasy"
+                    movies={getMoviesByGenre("Fantasy")}
+                    onWatchMovie={handleWatchMovie}
+                    onAddToFavorites={handleAddToList}
+                    onShowInfo={handleShowInfo}
+                  />
+                )}
+
+                {/* By Genre - Thriller */}
+                {getMoviesByGenre("Thriller").length > 0 && (
+                  <AnimeCarousel
+                    title="Thriller"
+                    movies={getMoviesByGenre("Thriller")}
+                    onWatchMovie={handleWatchMovie}
+                    onAddToFavorites={handleAddToList}
+                    onShowInfo={handleShowInfo}
+                  />
+                )}
+
+                {/* By Genre - Comedy */}
+                {getMoviesByGenre("Comedy").length > 0 && (
+                  <AnimeCarousel
+                    title="Comedy"
+                    movies={getMoviesByGenre("Comedy")}
+                    onWatchMovie={handleWatchMovie}
+                    onAddToFavorites={handleAddToList}
+                    onShowInfo={handleShowInfo}
+                  />
+                )}
+              </>
+            ) : (
+              /* Filtered Results */
+              <AnimeCarousel
+                title={`${selectedGenre} Anime`}
+                movies={filteredMovies}
+                onWatchMovie={handleWatchMovie}
+                onAddToFavorites={handleAddToList}
+                onShowInfo={handleShowInfo}
+              />
+            )}
+
+            {/* Search Results */}
+            {searchQuery && (
+              <AnimeCarousel
+                title={`Search Results for "${searchQuery}"`}
+                movies={filteredMovies}
+                onWatchMovie={handleWatchMovie}
+                onAddToFavorites={handleAddToList}
+                onShowInfo={handleShowInfo}
+              />
+            )}
+          </>
         ) : (
-          <div className="text-center py-16 bg-card rounded-2xl border-2 border-primary/20">
-            <div className="w-24 h-24 bg-background-elevated rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search size={40} className="text-muted-foreground" />
+          <div className="text-center py-20 px-4">
+            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Search size={40} className="text-white/40" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">No anime found</h3>
-            <p className="text-muted-foreground mb-6">
+            <h3 className="text-2xl font-bold mb-2 text-white">No anime found</h3>
+            <p className="text-white/60 mb-6">
               Try adjusting your search or filters
             </p>
             <Button
@@ -308,6 +385,7 @@ const Movies = () => {
                 setSearchQuery("");
                 setSelectedGenre("All");
               }}
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20"
             >
               Clear Filters
             </Button>
@@ -315,12 +393,21 @@ const Movies = () => {
         )}
       </div>
 
-      {/* Video Player Modal */}
+      {/* Modals */}
       {showPlayer && selectedMovie && (
         <VideoPlayer
           youtubeId={selectedMovie.youtube_id}
           title={selectedMovie.title}
           onClose={handleClosePlayer}
+        />
+      )}
+
+      {showInfoModal && infoMovie && (
+        <AnimeInfoModal
+          movie={infoMovie}
+          onClose={handleCloseInfo}
+          onWatch={handleWatchMovie}
+          onAddToFavorites={handleAddToList}
         />
       )}
     </div>
