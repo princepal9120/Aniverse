@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/princepal9120/ai-movie-recommedation/server/controllers"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/controllers"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/princepal9120/ai-movie-recommedation/server/utils"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/utils"
 )
 
 func AuthMiddleWare() gin.HandlerFunc {

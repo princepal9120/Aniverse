@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/princepal9120/ai-movie-recommedation/server/database"
-	"github.com/princepal9120/ai-movie-recommedation/server/models"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/database"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )

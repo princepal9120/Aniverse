@@ -1,0 +1,19 @@
+# Step 1: Base Go image
+FROM golang:1.25-alpine
+
+WORKDIR /app
+
+# Install git and air for live reload
+RUN apk add --no-cache git && go install github.com/air-verse/air@latest
+
+# Copy everything
+COPY . .
+
+# Download dependencies
+RUN go mod download
+
+# Expose port (match your .env PORT)
+EXPOSE 8080
+
+# Start Air
+CMD ["air", "-c", ".air.toml"]

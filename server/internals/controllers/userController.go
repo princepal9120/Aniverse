@@ -8,9 +8,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/princepal9120/ai-movie-recommedation/server/database"
-	"github.com/princepal9120/ai-movie-recommedation/server/models"
-	"github.com/princepal9120/ai-movie-recommedation/server/utils"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/database"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/models"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/utils"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"golang.org/x/crypto/bcrypt"
