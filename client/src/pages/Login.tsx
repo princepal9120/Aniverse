@@ -61,8 +61,8 @@ const Login = () => {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 bg-gradient-primary rounded-lg" />
-          <span className="text-2xl font-bold">MagicStream</span>
+          <img src="/logo.png" alt="Aniverse Logo" className="w-12 h-12" />
+          <span className="text-2xl font-bold">Aniverse</span>
         </Link>
 
         {/* Card */}

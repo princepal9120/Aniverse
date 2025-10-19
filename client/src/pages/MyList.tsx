@@ -3,19 +3,21 @@ import { Link, useNavigate } from "react-router-dom";
 import { Play, Trash2, Heart, Tv, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoriteContext";
 import { useToast } from "@/hooks/use-toast";
 import { Movie } from "@/lib/api";
+import VideoPlayer from "@/components/VideoPlayer";
 
 const MyList = () => {
   const { user, logout } = useAuth();
+  const { favorites, removeFromFavorites } = useFavorites();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [watchlist, setWatchlist] = useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [showPlayer, setShowPlayer] = useState(false);
 
   useEffect(() => {
-    // TODO: Fetch user's watchlist from API when endpoint is available
-    setIsLoading(false);
+    // Favorites are loaded from context automatically
   }, []);
 
   const handleLogout = async () => {
@@ -36,12 +38,41 @@ const MyList = () => {
   };
 
   const removeFromList = (movieId: string) => {
-    setWatchlist(watchlist.filter((movie) => movie.imdb_id !== movieId));
+    removeFromFavorites(movieId);
     toast({
       title: "Removed from list",
       description: "Movie has been removed from your list",
     });
   };
+
+  const handleWatchMovie = (movie: Movie) => {
+    if (movie.youtube_id) {
+      setSelectedMovie(movie);
+      setShowPlayer(true);
+    } else {
+      toast({
+        title: "Video not available",
+        description: "This anime doesn't have a trailer yet.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleClosePlayer = () => {
+    setShowPlayer(false);
+    setSelectedMovie(null);
+  };
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showPlayer) {
+        handleClosePlayer();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [showPlayer]);
 
   return (
     <div className="min-h-screen sakura-bg">
@@ -97,19 +128,15 @@ const MyList = () => {
               <span className="text-gradient-neon">My List</span>
             </h1>
             <p className="text-xl text-muted-foreground">
-              {watchlist.length} {watchlist.length === 1 ? "anime" : "anime"} saved for later
+              {favorites.length} {favorites.length === 1 ? "anime" : "anime"} saved for later
             </p>
           </div>
         </div>
 
         {/* Watchlist */}
-        {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : watchlist.length > 0 ? (
+        {favorites.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {watchlist.map((movie, index) => (
+            {favorites.map((movie, index) => (
               <div
                 key={movie.imdb_id}
                 className="group cursor-pointer animate-fade-in"
@@ -128,7 +155,7 @@ const MyList = () => {
                       size="sm"
                       leftIcon={<Play size={16} />}
                       className="shadow-glow-primary"
-                      onClick={() => window.open(`https://www.youtube.com/watch?v=${movie.youtube_id}`, '_blank')}
+                      onClick={() => handleWatchMovie(movie)}
                     >
                       Watch
                     </Button>
@@ -181,14 +208,14 @@ const MyList = () => {
         )}
 
         {/* Quick Stats */}
-        {watchlist.length > 0 && (
+        {favorites.length > 0 && (
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-card border-2 border-primary/30 rounded-2xl p-6 hover:shadow-glow-primary transition-all anime-border">
               <h3 className="text-muted-foreground text-sm font-medium mb-2 flex items-center gap-2">
                 <Tv size={16} className="text-primary" />
                 Total Movies
               </h3>
-              <p className="text-5xl font-bold text-gradient-neon">{watchlist.length}</p>
+              <p className="text-5xl font-bold text-gradient-neon">{favorites.length}</p>
             </div>
             <div className="bg-card border-2 border-secondary/30 rounded-2xl p-6 hover:shadow-glow-secondary transition-all anime-border">
               <h3 className="text-muted-foreground text-sm font-medium mb-2 flex items-center gap-2">
@@ -202,6 +229,15 @@ const MyList = () => {
           </div>
         )}
       </div>
+
+      {/* Video Player Modal */}
+      {showPlayer && selectedMovie && (
+        <VideoPlayer
+          youtubeId={selectedMovie.youtube_id}
+          title={selectedMovie.title}
+          onClose={handleClosePlayer}
+        />
+      )}
     </div>
   );
 };

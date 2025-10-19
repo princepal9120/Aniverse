@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Play, Plus, Search, SlidersHorizontal, Tv, Clock, TrendingUp, LogOut } from "lucide-react";
+import { Play, Plus, Check, Search, SlidersHorizontal, Tv, Clock, TrendingUp, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoriteContext";
 import { useToast } from "@/hooks/use-toast";
 import { api, Movie, Genre } from "@/lib/api";
+import VideoPlayer from "@/components/VideoPlayer";
 
 const Movies = () => {
   const { user, logout } = useAuth();
+  const { addToFavorites, isFavorite } = useFavorites();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -18,6 +21,8 @@ const Movies = () => {
   const [selectedGenre, setSelectedGenre] = useState<string>("All");
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [showPlayer, setShowPlayer] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,12 +72,48 @@ const Movies = () => {
   });
 
   const handleAddToList = async (movie: Movie) => {
-    // TODO: Implement add to list functionality
-    toast({
-      title: "Added to list",
-      description: `${movie.title} has been added to your list`,
-    });
+    if (isFavorite(movie.imdb_id)) {
+      toast({
+        title: "Already in list",
+        description: `${movie.title} is already in your list`,
+      });
+    } else {
+      addToFavorites(movie);
+      toast({
+        title: "Added to list",
+        description: `${movie.title} has been added to your list`,
+      });
+    }
   };
+
+  const handleWatchMovie = (movie: Movie) => {
+    if (movie.youtube_id) {
+      setSelectedMovie(movie);
+      setShowPlayer(true);
+    } else {
+      toast({
+        title: "Video not available",
+        description: "This anime doesn't have a trailer yet.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleClosePlayer = () => {
+    setShowPlayer(false);
+    setSelectedMovie(null);
+  };
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showPlayer) {
+        handleClosePlayer();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [showPlayer]);
 
   return (
     <div className="min-h-screen sakura-bg">
@@ -162,8 +203,8 @@ const Movies = () => {
                 <button
                   onClick={() => setSelectedGenre("All")}
                   className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${selectedGenre === "All"
-                      ? "bg-gradient-primary text-primary-foreground shadow-glow-primary border-primary scale-105"
-                      : "bg-background-secondary text-muted-foreground hover:bg-background-elevated hover:text-foreground border-border"
+                    ? "bg-gradient-primary text-primary-foreground shadow-glow-primary border-primary scale-105"
+                    : "bg-background-secondary text-muted-foreground hover:bg-background-elevated hover:text-foreground border-border"
                     }`}
                 >
                   All
@@ -173,8 +214,8 @@ const Movies = () => {
                     key={genre.genre_id}
                     onClick={() => setSelectedGenre(genre.genre_name)}
                     className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 border-2 ${selectedGenre === genre.genre_name
-                        ? "bg-gradient-primary text-primary-foreground shadow-glow-primary border-primary scale-105"
-                        : "bg-background-secondary text-muted-foreground hover:bg-background-elevated hover:text-foreground border-border"
+                      ? "bg-gradient-primary text-primary-foreground shadow-glow-primary border-primary scale-105"
+                      : "bg-background-secondary text-muted-foreground hover:bg-background-elevated hover:text-foreground border-border"
                       }`}
                   >
                     {genre.genre_name}
@@ -219,17 +260,17 @@ const Movies = () => {
                       size="sm"
                       leftIcon={<Play size={16} />}
                       className="shadow-glow-primary"
-                      onClick={() => window.open(`https://www.youtube.com/watch?v=${movie.youtube_id}`, '_blank')}
+                      onClick={() => handleWatchMovie(movie)}
                     >
                       Watch
                     </Button>
                     <Button
                       variant="secondary"
                       size="sm"
-                      leftIcon={<Plus size={16} />}
+                      leftIcon={isFavorite(movie.imdb_id) ? <Check size={16} /> : <Plus size={16} />}
                       onClick={() => handleAddToList(movie)}
                     >
-                      My List
+                      {isFavorite(movie.imdb_id) ? "In List" : "My List"}
                     </Button>
                   </div>
                   {/* Ranking Badge */}
@@ -273,6 +314,15 @@ const Movies = () => {
           </div>
         )}
       </div>
+
+      {/* Video Player Modal */}
+      {showPlayer && selectedMovie && (
+        <VideoPlayer
+          youtubeId={selectedMovie.youtube_id}
+          title={selectedMovie.title}
+          onClose={handleClosePlayer}
+        />
+      )}
     </div>
   );
 };

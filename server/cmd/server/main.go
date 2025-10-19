@@ -11,8 +11,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/princepal9120/ai-movie-recommedation/server/database"
-	"github.com/princepal9120/ai-movie-recommedation/server/routes"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/database"
+	"github.com/princepal9120/ai-movie-recommedation/server/internals/routes"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -21,8 +21,8 @@ func main() {
 
 	router := gin.Default()
 
-	router.GET("/hello", func(c *gin.Context) {
-		c.String(200, "Hello, MagicStreamMovies!")
+	router.GET("/health", func(c *gin.Context) {
+		c.String(200, "health is Good")
 	})
 
 	err := godotenv.Load(".env")

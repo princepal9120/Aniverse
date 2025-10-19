@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Play, Plus, Tv, TrendingUp, Clock, LogOut } from "lucide-react";
+import { Play, Plus, Check, Tv, TrendingUp, Clock, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFavorites } from "@/contexts/FavoriteContext";
 import { useToast } from "@/hooks/use-toast";
 import { api, Movie } from "@/lib/api";
+import VideoPlayer from "@/components/VideoPlayer";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
+  const { addToFavorites, isFavorite } = useFavorites();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+  const [showPlayer, setShowPlayer] = useState(false);
 
   useEffect(() => {
     const fetchRecommendedMovies = async () => {
@@ -61,6 +66,51 @@ const Dashboard = () => {
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
+
+  const handleWatchMovie = (movie: Movie) => {
+    if (movie.youtube_id) {
+      setSelectedMovie(movie);
+      setShowPlayer(true);
+    } else {
+      toast({
+        title: "Video not available",
+        description: "This anime doesn't have a trailer yet.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleClosePlayer = () => {
+    setShowPlayer(false);
+    setSelectedMovie(null);
+  };
+
+  const handleAddToFavorites = (movie: Movie) => {
+    if (isFavorite(movie.imdb_id)) {
+      toast({
+        title: "Already in list",
+        description: `${movie.title} is already in your list`,
+      });
+    } else {
+      addToFavorites(movie);
+      toast({
+        title: "Added to list",
+        description: `${movie.title} has been added to your list`,
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showPlayer) {
+        handleClosePlayer();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [showPlayer]);
+
   return (
     <div className="min-h-screen sakura-bg">
       {/* Navigation */}
@@ -149,11 +199,38 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex gap-4">
-              <Button variant="hero" size="lg" leftIcon={<Play size={20} />} className="shadow-glow-primary">
+              <Button
+                variant="hero"
+                size="lg"
+                leftIcon={<Play size={20} />}
+                className="shadow-glow-primary"
+                onClick={() => handleWatchMovie({
+                  imdb_id: "jjk001",
+                  title: "Jujutsu Kaisen",
+                  youtube_id: "pkKu9hLT-t8",
+                  poster_path: "https://images.unsplash.com/photo-1606663889134-b1dedb5ed8b7?w=1920&h=1080&fit=crop",
+                  genre: [{ genre_id: 1, genre_name: "Shounen" }],
+                  ranking: { ranking_value: 4.9, ranking_name: "Excellent" },
+                  admin_review: ""
+                })}
+              >
                 Watch Now
               </Button>
-              <Button variant="secondary" size="lg" leftIcon={<Plus size={20} />}>
-                Add to List
+              <Button
+                variant="secondary"
+                size="lg"
+                leftIcon={isFavorite("jjk001") ? <Check size={20} /> : <Plus size={20} />}
+                onClick={() => handleAddToFavorites({
+                  imdb_id: "jjk001",
+                  title: "Jujutsu Kaisen",
+                  youtube_id: "pkKu9hLT-t8",
+                  poster_path: "https://images.unsplash.com/photo-1606663889134-b1dedb5ed8b7?w=1920&h=1080&fit=crop",
+                  genre: [{ genre_id: 1, genre_name: "Shounen" }],
+                  ranking: { ranking_value: 4.9, ranking_name: "Excellent" },
+                  admin_review: ""
+                })}
+              >
+                {isFavorite("jjk001") ? "In My List" : "Add to List"}
               </Button>
             </div>
           </div>
@@ -197,11 +274,22 @@ const Dashboard = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button variant="hero" size="sm" leftIcon={<Play size={16} />} className="shadow-glow-primary">
+                    <Button
+                      variant="hero"
+                      size="sm"
+                      leftIcon={<Play size={16} />}
+                      className="shadow-glow-primary"
+                      onClick={() => handleWatchMovie(movie)}
+                    >
                       Watch
                     </Button>
-                    <Button variant="secondary" size="sm" leftIcon={<Plus size={16} />}>
-                      My List
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      leftIcon={isFavorite(movie.imdb_id) ? <Check size={16} /> : <Plus size={16} />}
+                      onClick={() => handleAddToFavorites(movie)}
+                    >
+                      {isFavorite(movie.imdb_id) ? "In List" : "My List"}
                     </Button>
                   </div>
                   {/* Ranking Badge */}
@@ -251,6 +339,15 @@ const Dashboard = () => {
           </Link>
         </div>
       </section>
+
+      {/* Video Player Modal */}
+      {showPlayer && selectedMovie && (
+        <VideoPlayer
+          youtubeId={selectedMovie.youtube_id}
+          title={selectedMovie.title}
+          onClose={handleClosePlayer}
+        />
+      )}
     </div>
   );
 };
