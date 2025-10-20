@@ -219,8 +219,8 @@ func GetReviewRanking(admin_review string, client *mongo.Client, c *gin.Context)
 	if err != nil {
 		return "", 0, err
 	}
-
-	base_prompt_template := os.Getenv("BASE_PROMPT_TEMPLATE")
+	BASE_PROMPT_TEMPLATE := "Return a response using one of these words: {rankings}. the response should be a single word and should not contain any other text. the response should based on the following reviews"
+	base_prompt_template := BASE_PROMPT_TEMPLATE
 
 	base_prompt := strings.Replace(base_prompt_template, "{rankings}", sentimentDelimited, 1)
 

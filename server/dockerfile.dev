@@ -1,0 +1,25 @@
+# ================================
+# Development Dockerfile with Air
+# ================================
+FROM golang:1.25-alpine
+
+WORKDIR /app
+
+# Install git and air for live reload
+RUN apk add --no-cache git && \
+    go install github.com/air-verse/air@latest
+
+# Copy go mod files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 8080
+
+# Start Air for hot reload
+CMD ["air", "-c", ".air.toml"]

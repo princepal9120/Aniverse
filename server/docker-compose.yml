@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # Development Server with Hot Reload
+  server-dev:
+    build:
+      context: .
+      dockerfile: dockerfile.dev
+    container_name: aniverse-server-dev
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/tmp # Don't mount tmp directory to avoid conflicts
+    restart: unless-stopped
+    networks:
+      - aniverse-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # Production Server (Uncomment to use)
+  # server-prod:
+  #   build:
+  #     context: .
+  #     dockerfile: dockerfile
+  #   container_name: aniverse-server-prod
+  #   ports:
+  #     - "8080:8080"
+  #   env_file:
+  #     - .env
+  #   restart: unless-stopped
+  #   networks:
+  #     - aniverse-network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 5s
+
+networks:
+  aniverse-network:
+    driver: bridge

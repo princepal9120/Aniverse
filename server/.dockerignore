@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+.github
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+*.tmp
+*.log
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+*_test.go
+test/
+coverage.out
+
+# Air (live reload)
+.air.toml
+tmp/
+
+# OS
+.DS_Store
+Thumbs.db
