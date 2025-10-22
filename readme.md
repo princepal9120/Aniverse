@@ -33,7 +33,15 @@
 - Recommendation analytics and dashboard visualization  
 
 ---
+---
+## System Design Diagram
 
+
+<img width="5356" height="2168" alt="diagram" src="https://github.com/user-attachments/assets/91aa689c-4795-4a10-9015-3ecc5a4e860a" />
+
+
+
+---
 ## 🛠️ Getting Started
 
 ### Prerequisites
